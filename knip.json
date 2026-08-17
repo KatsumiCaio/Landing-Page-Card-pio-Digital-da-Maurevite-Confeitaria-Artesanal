@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": ["src/main.tsx", "server.ts"],
+  "project": ["src/**/*.{ts,tsx}", "tests/**/*.ts"],
+  "ignoreDependencies": [
+    "@google/genai",
+    "autoprefixer",
+    "express",
+    "@types/express"
+  ]
+}

@@ -38,6 +38,14 @@ Este documento cataloga todas as tarefas do projeto divididas nas três categori
   - **Status:** Concluído
   - **Escopo:** Inclusão de `preconnect` para Google Fonts e `loading="lazy"` nas fotos de produtos.
 
+- [x] **Issue #013 — `[Melhoria]` Implementação de Motion Principles (Kyle Zantos, Emil Kowalski e Jakub Krehel): Skeletons, AnimatePresence e Feedback Visual Tátil**
+  - **Status:** Concluído
+  - **Escopo:** Criação do componente `ImageWithSkeleton.tsx` com shimmer gradient e transição suave de carregamento; animação com `AnimatePresence` e spring physics para Modais, Drawer e FAQ; microinterações táteis de toque (`whileTap: 0.94-0.96`); `layoutId` nas abas de categoria; componente `ToastFeedback.tsx` com feedback visual imediato ao adicionar produtos à sacola; e estados de progresso no envio ao WhatsApp.
+
+- [x] **Issue #014 — `[Melhoria]` Esteira de Qualidade (Quality Gate Pré-Merge), Observabilidade, Testes Unitários/E2E, Segurança e Termos de Uso (LGPD)**
+  - **Status:** Concluído
+  - **Escopo:** Configuração da esteira de CI (`.github/workflows/quality-gate.yml`) com validação estática de tipagem, Commitlint, Knip e Playwright; implementação da camada de observabilidade (`src/lib/observability.ts`) com ErrorBoundary (`src/components/ErrorBoundary.tsx`); serviço de segurança e rate limiting (`src/lib/security.ts`); modal de Termos de Uso e Privacidade LGPD (`src/components/LegalModal.tsx`); suíte de testes unitários e de integração (`tests/`); e formalização de contratos de arquitetura (`ARCHITECTURE.md`).
+
 ---
 
 ## ✨ 3. Novas Funções (`[Nova função]`)

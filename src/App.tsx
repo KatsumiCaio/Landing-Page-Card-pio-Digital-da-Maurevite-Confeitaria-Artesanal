@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { ProductItem, OrderItem } from './types';
 import { PRODUCTS_DATA } from './data/products';
+import { observability } from './lib/observability';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { BentoShowcase } from './components/BentoShowcase';
 import { MenuSection } from './components/MenuSection';
+import { SeasonalKits } from './components/SeasonalKits';
 import { CraftsmanshipManifesto } from './components/CraftsmanshipManifesto';
 import { CakeCalculator } from './components/CakeCalculator';
 import { HowToOrder } from './components/HowToOrder';
@@ -13,13 +16,22 @@ import { Footer } from './components/Footer';
 import { ProductModal } from './components/ProductModal';
 import { OrderDrawer } from './components/OrderDrawer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
+import { ToastFeedback } from './components/ToastFeedback';
+import { LegalModal } from './components/LegalModal';
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<'todos' | 'bolos' | 'cones' | 'fatias' | 'doces'>('todos');
   const [activeModalProduct, setActiveModalProduct] = useState<ProductItem | null>(null);
   const [isOrderDrawerOpen, setIsOrderDrawerOpen] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
+  const [toastProduct, setToastProduct] = useState<ProductItem | null>(null);
+
+  // Initialize observability and telemetry on mount
+  useEffect(() => {
+    observability.init();
+  }, []);
 
   // Close modals on Escape key
   useEffect(() => {
@@ -27,6 +39,7 @@ export default function App() {
       if (e.key === 'Escape') {
         setActiveModalProduct(null);
         setIsOrderDrawerOpen(false);
+        setIsLegalModalOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -48,9 +61,15 @@ export default function App() {
 
     // Provide visual feedback
     setAddedProductId(product.id);
+    setToastProduct(product);
+
     setTimeout(() => {
       setAddedProductId(null);
-    }, 1500);
+    }, 1800);
+
+    setTimeout(() => {
+      setToastProduct((current) => (current?.id === product.id ? null : current));
+    }, 3800);
   };
 
   const handleUpdateQuantity = (productId: string, delta: number) => {
@@ -98,70 +117,91 @@ export default function App() {
   const totalOrderCount = orderItems.reduce((acc, curr) => acc + curr.quantity, 0);
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#FAFAF8] text-[#1E2024] flex flex-col font-sans">
-      {/* Sticky Header / Navbar */}
-      <Navbar
-        orderCount={totalOrderCount}
-        onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
-      />
-
-      {/* Main Content Area */}
-      <main className="flex-1 w-full">
-        {/* First Fold: Editorial Hero */}
-        <Hero onExploreMenu={handleExploreMenu} />
-
-        {/* Bento Grid Editorial Showcase */}
-        <BentoShowcase onSelectCategory={handleSelectBentoCategory} />
-
-        {/* Interactive Digital Menu Section */}
-        <MenuSection
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          onOpenProductModal={(product) => setActiveModalProduct(product)}
-          onAddToCart={handleAddToCart}
-          addedProductId={addedProductId}
+    <ErrorBoundary>
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#FAFAF8] text-[#1E2024] flex flex-col font-sans selection:bg-[#C49A6C]/30">
+        {/* Sticky Header / Navbar */}
+        <Navbar
+          orderCount={totalOrderCount}
+          onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
         />
 
-        {/* Interactive Cake Yield Calculator */}
-        <CakeCalculator onSelectProductForOrder={handleSelectProductForOrder} />
+        {/* Main Content Area */}
+        <main className="flex-1 w-full">
+          {/* First Fold: Editorial Hero */}
+          <Hero onExploreMenu={handleExploreMenu} />
 
-        {/* Craftsmanship Manifesto (3 Pillars) */}
-        <CraftsmanshipManifesto />
+          {/* Bento Grid Editorial Showcase */}
+          <BentoShowcase onSelectCategory={handleSelectBentoCategory} />
 
-        {/* How to Order (3 Steps) */}
-        <HowToOrder onExploreMenu={handleExploreMenu} />
+          {/* Interactive Digital Menu Section */}
+          <MenuSection
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            onOpenProductModal={(product) => setActiveModalProduct(product)}
+            onAddToCart={handleAddToCart}
+            addedProductId={addedProductId}
+          />
 
-        {/* Interactive FAQ Section */}
-        <FaqSection />
-      </main>
+          {/* Seasonal & Curated Gift Kits with Decorative Micro-Badges */}
+          <SeasonalKits
+            onAddToCart={handleAddToCart}
+            addedProductId={addedProductId}
+          />
 
-      {/* Footer & Location / Instagram */}
-      <Footer />
+          {/* Interactive Cake Yield Calculator */}
+          <CakeCalculator onSelectProductForOrder={handleSelectProductForOrder} />
 
-      {/* Floating High-Conversion WhatsApp Action */}
-      <FloatingWhatsApp />
+          {/* Craftsmanship Manifesto (3 Pillars) */}
+          <CraftsmanshipManifesto />
 
-      {/* Product Detail Modal */}
-      <ProductModal
-        product={activeModalProduct}
-        onClose={() => setActiveModalProduct(null)}
-        onAddToCart={handleAddToCart}
-        isAdded={
-          activeModalProduct
-            ? orderItems.some((item) => item.product.id === activeModalProduct.id)
-            : false
-        }
-      />
+          {/* How to Order (3 Steps) */}
+          <HowToOrder onExploreMenu={handleExploreMenu} />
 
-      {/* Order Summary / WhatsApp Message Builder Drawer */}
-      <OrderDrawer
-        isOpen={isOrderDrawerOpen}
-        onClose={() => setIsOrderDrawerOpen(false)}
-        items={orderItems}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveItem}
-        onClearOrder={handleClearOrder}
-      />
-    </div>
+          {/* Interactive FAQ Section */}
+          <FaqSection />
+        </main>
+
+        {/* Footer & Location / Instagram */}
+        <Footer onOpenLegalModal={() => setIsLegalModalOpen(true)} />
+
+        {/* Floating High-Conversion WhatsApp Action */}
+        <FloatingWhatsApp />
+
+        {/* Toast Feedback on Add to Bag */}
+        <ToastFeedback
+          product={toastProduct}
+          onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
+          onDismiss={() => setToastProduct(null)}
+        />
+
+        {/* Product Detail Modal */}
+        <ProductModal
+          product={activeModalProduct}
+          onClose={() => setActiveModalProduct(null)}
+          onAddToCart={handleAddToCart}
+          isAdded={
+            activeModalProduct
+              ? orderItems.some((item) => item.product.id === activeModalProduct.id)
+              : false
+          }
+        />
+
+        {/* Order Summary / WhatsApp Message Builder Drawer */}
+        <OrderDrawer
+          isOpen={isOrderDrawerOpen}
+          onClose={() => setIsOrderDrawerOpen(false)}
+          items={orderItems}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveItem}
+          onClearOrder={handleClearOrder}
+        />
+
+        {/* Legal Terms & Privacy Modal */}
+        <LegalModal
+          isOpen={isLegalModalOpen}
+          onClose={() => setIsLegalModalOpen(false)}
+        />
+      </div>
+    </ErrorBoundary>
   );
 }

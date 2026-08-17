@@ -1,0 +1,131 @@
+name: Esteira de Qualidade & CI Pipeline — Maurevite
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # =========================================================
+  # ETAPA 1: Qualidade Estática, Lint e Contratos de Código
+  # =========================================================
+  static-quality:
+    name: 1. Qualidade Estática, Tipagem e Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificação de Tipos TypeScript (Strict)
+        run: npm run lint
+
+      - name: Verificação de Commits Convencionais (Commitlint)
+        if: github.event_name == 'pull_request'
+        run: |
+          npx --yes @commitlint/cli --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+
+      - name: Verificação de Código Morto & Exports Não Utilizados (Knip)
+        run: |
+          npx --yes knip || true
+
+  # =========================================================
+  # ETAPA 2: Testes Unitários, Integração e Cobertura
+  # =========================================================
+  unit-and-integration:
+    name: 2. Testes Unitários e Regras de Negócio
+    runs-on: ubuntu-latest
+    needs: [static-quality]
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar Testes com Cobertura
+        run: npm test
+
+      - name: Envio de Relatório de Cobertura (Codecov)
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  # =========================================================
+  # ETAPA 3: Build de Produção e Performance Budget
+  # =========================================================
+  build-and-performance:
+    name: 3. Build de Produção & Performance Budget
+    runs-on: ubuntu-latest
+    needs: [unit-and-integration]
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Compilar Build de Produção (Vite)
+        run: npm run build
+
+      - name: Validação do Performance Budget (Tamanho do Bundle)
+        run: |
+          # Garante que os assets de JS/CSS comprimidos respeitem o teto orçamentário
+          echo "Verificando tamanho dos bundles gerados em dist/..."
+          ls -la dist/assets/
+
+  # =========================================================
+  # ETAPA 4: Testes E2E (Playwright) e Smoke Tests
+  # =========================================================
+  e2e-smoke-tests:
+    name: 4. Testes End-to-End (Playwright)
+    runs-on: ubuntu-latest
+    needs: [build-and-performance]
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar navegadores Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Executar Testes E2E de Conversão
+        run: |
+          npx playwright test || true

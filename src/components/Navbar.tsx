@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Logo } from './Logo';
 import { BUSINESS_INFO } from '../data/products';
 import { ShoppingBag, MessageCircle, Menu, X, Clock, MapPin } from 'lucide-react';
@@ -22,6 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({ orderCount, onOpenOrderDrawer })
 
   const navLinks = [
     { label: 'Cardápio', href: '#cardapio' },
+    { label: 'Kits & Mimos', href: '#kits-especiais' },
     { label: 'Calculadora de Bolo', href: '#calculadora' },
     { label: 'Destaques', href: '#destaques' },
     { label: 'O Cuidado', href: '#cuidado' },
@@ -84,37 +86,49 @@ export const Navbar: React.FC<NavbarProps> = ({ orderCount, onOpenOrderDrawer })
           {/* Desktop Actions */}
           <div className="hidden sm:flex items-center gap-3">
             {/* Quick Order Basket Pill */}
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={onOpenOrderDrawer}
               className="relative inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-zinc-300/90 text-xs font-medium text-zinc-800 bg-white hover:bg-zinc-50 transition-all shadow-2xs cursor-pointer"
               title="Ver resumo de itens selecionados"
             >
               <ShoppingBag className="w-4 h-4 text-[#C49A6C]" />
               <span>Meu Pedido</span>
-              {orderCount > 0 && (
-                <span className="ml-0.5 inline-flex items-center justify-center w-5 h-5 text-[11px] font-bold text-white bg-[#1E2024] rounded-full">
-                  {orderCount}
-                </span>
-              )}
-            </button>
+              <AnimatePresence mode="popLayout">
+                {orderCount > 0 && (
+                  <motion.span
+                    key={orderCount}
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.5, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                    className="ml-0.5 inline-flex items-center justify-center w-5 h-5 text-[11px] font-bold text-white bg-[#1E2024] rounded-full shadow-2xs"
+                  >
+                    {orderCount}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
 
             {/* Direct WhatsApp CTA Button */}
-            <a
+            <motion.a
+              whileTap={{ scale: 0.95 }}
               href={BUSINESS_INFO.whatsappBaseUrl + '?text=' + encodeURIComponent(BUSINESS_INFO.defaultWhatsappMessage)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1E2024] hover:bg-zinc-800 text-white text-xs font-medium tracking-wide transition-all shadow-xs hover:shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1E2024] hover:bg-zinc-800 text-white text-xs font-medium tracking-wide transition-all shadow-xs hover:shadow-sm cursor-pointer"
             >
               <MessageCircle className="w-3.5 h-3.5 text-[#C49A6C]" />
               <span>Pedir no WhatsApp</span>
-            </a>
+            </motion.a>
           </div>
 
           {/* Mobile Menu Button & Cart icon */}
           <div className="flex sm:hidden items-center gap-2">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.9 }}
               onClick={onOpenOrderDrawer}
-              className="relative p-2 rounded-full border border-zinc-300 bg-white text-zinc-800"
+              className="relative p-2 rounded-full border border-zinc-300 bg-white text-zinc-800 cursor-pointer"
               aria-label="Ver pedido"
             >
               <ShoppingBag className="w-4 h-4 text-[#C49A6C]" />
@@ -123,50 +137,59 @@ export const Navbar: React.FC<NavbarProps> = ({ orderCount, onOpenOrderDrawer })
                   {orderCount}
                 </span>
               )}
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileTap={{ scale: 0.9 }}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-zinc-800 hover:bg-zinc-100 transition-colors focus:outline-hidden"
+              className="p-2 rounded-lg text-zinc-800 hover:bg-zinc-100 transition-colors focus:outline-hidden cursor-pointer"
               aria-label="Menu de Navegação"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            </motion.button>
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-zinc-200 bg-[#FAFAF8] px-4 pt-4 pb-6 mt-3 space-y-3 shadow-lg">
-            <nav className="flex flex-col space-y-2">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-base font-medium text-zinc-800 rounded-lg hover:bg-zinc-100 transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
+        {/* Mobile Dropdown Menu with Smooth Accordion Transition */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="md:hidden border-t border-zinc-200 bg-[#FAFAF8] px-4 pt-4 pb-6 mt-3 space-y-3 shadow-lg overflow-hidden"
+            >
+              <nav className="flex flex-col space-y-2">
+                {navLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-3 py-2 text-base font-medium text-zinc-800 rounded-lg hover:bg-zinc-100 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </nav>
 
-            <div className="pt-3 border-t border-zinc-200 flex flex-col gap-2.5">
-              <a
-                href={BUSINESS_INFO.whatsappBaseUrl + '?text=' + encodeURIComponent(BUSINESS_INFO.defaultWhatsappMessage)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#1E2024] text-white text-sm font-medium shadow-xs"
-              >
-                <MessageCircle className="w-4 h-4 text-[#C49A6C]" />
-                <span>Conversar no WhatsApp ({BUSINESS_INFO.phoneDisplay})</span>
-              </a>
-              <p className="text-center text-xs text-zinc-500 font-light pt-1">
-                Atendimento em {BUSINESS_INFO.city}
-              </p>
-            </div>
-          </div>
-        )}
+              <div className="pt-3 border-t border-zinc-200 flex flex-col gap-2.5">
+                <a
+                  href={BUSINESS_INFO.whatsappBaseUrl + '?text=' + encodeURIComponent(BUSINESS_INFO.defaultWhatsappMessage)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#1E2024] text-white text-sm font-medium shadow-xs"
+                >
+                  <MessageCircle className="w-4 h-4 text-[#C49A6C]" />
+                  <span>Conversar no WhatsApp ({BUSINESS_INFO.phoneDisplay})</span>
+                </a>
+                <p className="text-center text-xs text-zinc-500 font-light pt-1">
+                  Atendimento em {BUSINESS_INFO.city}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
     </>
   );

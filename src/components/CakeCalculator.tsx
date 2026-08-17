@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { Calculator, Users, Sparkles, Cake, MessageCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { BUSINESS_INFO, PRODUCTS_DATA } from '../data/products';
+import { ImageWithSkeleton } from './ImageWithSkeleton';
 
 interface CakeCalculatorProps {
   onSelectProductForOrder?: (productId: string) => void;
@@ -16,7 +18,6 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
   const selectedCake = cakeOptions.find((c) => c.id === selectedFlavorId) || cakeOptions[0];
 
   // Calculations based on confectionery standards (approx 100-110g per slice/guest for celebration cake)
-  // Base: 10 guests = 1.2kg | 15 guests = 1.8kg | 20 guests = 2.4kg | 30 guests = 3.5kg | 50 guests = 5.5kg
   const recommendedWeightKg = Math.max(1.0, Math.round((guestCount * 0.11) * 10) / 10);
   
   // Recommended cake pan diameter
@@ -90,7 +91,8 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
               </label>
               <div className="flex flex-wrap gap-2">
                 {occasions.map((occ) => (
-                  <button
+                  <motion.button
+                    whileTap={{ scale: 0.94 }}
                     key={occ.id}
                     type="button"
                     onClick={() => setOccasion(occ.id)}
@@ -101,7 +103,7 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
                     }`}
                   >
                     {occ.label}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -113,9 +115,15 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
                   <Users className="w-4 h-4 text-[#C49A6C]" />
                   2. Número de Convidados / Fatias:
                 </label>
-                <div className="px-3 py-1 bg-white border border-zinc-300 rounded-full text-sm font-semibold text-zinc-900">
+                <motion.div
+                  key={guestCount}
+                  initial={{ scale: 1.15, color: '#C49A6C' }}
+                  animate={{ scale: 1, color: '#18181b' }}
+                  transition={{ duration: 0.15 }}
+                  className="px-3 py-1 bg-white border border-zinc-300 rounded-full text-sm font-semibold"
+                >
                   {guestCount} pessoas
-                </div>
+                </motion.div>
               </div>
 
               <input
@@ -125,7 +133,7 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
                 step={5}
                 value={guestCount}
                 onChange={(e) => setGuestCount(Number(e.target.value))}
-                className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#1E2024]"
+                className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#1E2024] transition-all"
                 aria-label="Controle de quantidade de convidados"
               />
 
@@ -148,20 +156,22 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
                 {cakeOptions.map((cake) => {
                   const isSelected = cake.id === selectedFlavorId;
                   return (
-                    <button
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
                       key={cake.id}
                       type="button"
                       onClick={() => setSelectedFlavorId(cake.id)}
                       className={`p-3 rounded-2xl border text-left flex gap-3 items-center transition-all cursor-pointer ${
                         isSelected
-                          ? 'border-zinc-900 bg-white shadow-xs'
+                          ? 'border-zinc-900 bg-white shadow-xs ring-1 ring-zinc-900/10'
                           : 'border-zinc-200 bg-white/70 hover:border-zinc-300'
                       }`}
                     >
-                      <img
+                      <ImageWithSkeleton
                         src={cake.image}
                         alt={cake.name}
-                        className="w-11 h-11 rounded-lg object-cover bg-zinc-100 shrink-0"
+                        className="w-11 h-11 rounded-xl object-cover"
+                        containerClassName="w-11 h-11 rounded-xl shrink-0"
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1">
@@ -174,7 +184,7 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
                           R$ {cake.priceValue},00/kg
                         </p>
                       </div>
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
@@ -204,9 +214,14 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-zinc-900/90 border border-zinc-800 p-4 rounded-2xl">
                 <span className="text-[11px] text-zinc-400 font-light block">Peso Sugerido</span>
-                <span className="font-serif text-2xl text-white font-medium mt-0.5 block">
+                <motion.span
+                  key={recommendedWeightKg}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="font-serif text-2xl text-white font-medium mt-0.5 block"
+                >
                   ~{recommendedWeightKg.toFixed(1).replace('.', ',')} kg
-                </span>
+                </motion.span>
                 <span className="text-[10px] text-zinc-500 mt-1 block">
                   Fartura garantida (~110g/pessoa)
                 </span>
@@ -214,9 +229,14 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
 
               <div className="bg-zinc-900/90 border border-zinc-800 p-4 rounded-2xl">
                 <span className="text-[11px] text-zinc-400 font-light block">Estrutura / Aro</span>
-                <span className="font-serif text-base text-[#C49A6C] font-medium mt-1 block leading-tight">
+                <motion.span
+                  key={getPanSize(recommendedWeightKg)}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="font-serif text-base text-[#C49A6C] font-medium mt-1 block leading-tight"
+                >
                   {getPanSize(recommendedWeightKg)}
-                </span>
+                </motion.span>
                 <span className="text-[10px] text-zinc-500 mt-1 block">
                   Camadas altas & corte perfeito
                 </span>
@@ -224,9 +244,14 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
 
               <div className="bg-zinc-900/90 border border-zinc-800 p-4 rounded-2xl">
                 <span className="text-[11px] text-zinc-400 font-light block">Docinhos de Apoio</span>
-                <span className="font-serif text-2xl text-white font-medium mt-0.5 block">
+                <motion.span
+                  key={recommendedSweets}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="font-serif text-2xl text-white font-medium mt-0.5 block"
+                >
                   ~{recommendedSweets} un.
-                </span>
+                </motion.span>
                 <span className="text-[10px] text-zinc-500 mt-1 block">
                   Cálculo de 4 doces por convidado
                 </span>
@@ -234,9 +259,14 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
 
               <div className="bg-zinc-900/90 border border-zinc-800 p-4 rounded-2xl">
                 <span className="text-[11px] text-zinc-400 font-light block">Estimativa Bolo</span>
-                <span className="font-serif text-2xl text-[#C49A6C] font-medium mt-0.5 block">
+                <motion.span
+                  key={estimatedCakePrice}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="font-serif text-2xl text-[#C49A6C] font-medium mt-0.5 block"
+                >
                   R$ {estimatedCakePrice.toFixed(2).replace('.', ',')}
-                </span>
+                </motion.span>
                 <span className="text-[10px] text-zinc-500 mt-1 block">
                   {selectedCake.name.split(' ')[1] || 'Artesanal'}
                 </span>
@@ -244,11 +274,12 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
             </div>
 
             {/* Flavor Note */}
-            <div className="p-3.5 bg-zinc-900/60 rounded-xl border border-zinc-800/80 flex items-center gap-3">
-              <img
+            <div className="p-3.5 bg-zinc-900/60 rounded-2xl border border-zinc-800/80 flex items-center gap-3">
+              <ImageWithSkeleton
                 src={selectedCake.image}
                 alt={selectedCake.name}
-                className="w-10 h-10 rounded-lg object-cover shrink-0"
+                className="w-10 h-10 rounded-xl object-cover"
+                containerClassName="w-10 h-10 rounded-xl shrink-0"
               />
               <div className="min-w-0">
                 <p className="text-xs font-medium text-zinc-200 truncate">{selectedCake.name}</p>
@@ -258,24 +289,26 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
 
             {/* Action Buttons */}
             <div className="space-y-2.5 pt-2">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.97 }}
                 type="button"
                 onClick={handleWhatsAppConsultation}
                 className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-[#C49A6C] hover:bg-[#b58b5e] text-zinc-950 font-medium rounded-full text-xs tracking-wide transition-all shadow-md cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Pedir Orçamento Sob Medida no WhatsApp</span>
-              </button>
+              </motion.button>
 
               {onSelectProductForOrder && (
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
                   type="button"
                   onClick={() => onSelectProductForOrder(selectedCake.id)}
                   className="w-full flex items-center justify-center gap-1.5 py-2.5 px-4 text-zinc-300 hover:text-white text-xs font-light transition-colors cursor-pointer"
                 >
                   <span>Adicionar este bolo ao Meu Pedido</span>
                   <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                </motion.button>
               )}
             </div>
 

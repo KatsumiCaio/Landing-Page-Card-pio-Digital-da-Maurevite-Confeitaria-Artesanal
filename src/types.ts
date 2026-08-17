@@ -35,3 +35,20 @@ export interface PillarItem {
   description: string;
   details: string;
 }
+
+export interface SeasonalKitItem {
+  id: string;
+  name: string;
+  tagline: string;
+  theme: 'presentes' | 'romantico' | 'festas' | 'aniversario';
+  themeLabel: string;
+  description: string;
+  itemsIncluded: string[];
+  microBadges: { label: string; icon?: string }[];
+  priceFormatted: string;
+  priceValue: number;
+  image: string;
+  leadTime: string;
+  isFeatured?: boolean;
+  defaultCardMessage: string;
+}

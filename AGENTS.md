@@ -48,7 +48,7 @@ Tipo: [Correção | Melhoria | Nova função]
 ## 🛠️ 3. Regras de Engenharia e Boas Práticas
 
 1. **Mobile-First & Anti-Overflow**: O container raiz deve sempre manter `w-full max-w-full overflow-x-hidden`.
-2. **Validação Obrigatória**: Antes de finalizar qualquer alteração, execute sempre a compilação e o linter.
+2. **Validação Obrigatória**: Antes de finalizar qualquer alteração, execute sempre a compilação e o linter (`npm run check:all`).
 3. **Identidade Visual Maurevite**:
    - Fundo linho / off-white: `#FAFAF8`
    - Primária grafite: `#1E2024`
@@ -58,5 +58,18 @@ Tipo: [Correção | Melhoria | Nova função]
 
 ---
 
-## 📋 4. Registro de Backlog de Tarefas
+## 🚦 4. Esteira de Qualidade (Quality Gate Pré-Merge)
+
+Antes de qualquer código ser enviado para a branch principal (`main`), a seguinte suíte deve obrigatoriamente passar com 100% de sucesso:
+
+1. **Lint e Tipagem Estrita**: `npm run lint` (`tsc --noEmit`).
+2. **Testes Unitários & Integração**: `npm test` (`tsx --test tests/**/*.test.ts`).
+3. **Compilação de Produção**: `npm run build` (`vite build`).
+4. **Comando Único de Validação**: `npm run check:all`.
+5. **Diretrizes de Arquitetura**: Consulte o arquivo `ARCHITECTURE.md` para contratos de componentização, anti-overengineering, observabilidade e segurança.
+
+---
+
+## 📋 5. Registro de Backlog de Tarefas
 Consulte o arquivo `ISSUES.md` para visualizar as tarefas abertas, em progresso e concluídas.
+

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { FAQS_DATA, BUSINESS_INFO } from '../data/products';
 import { ChevronDown, HelpCircle, MessageCircle } from 'lucide-react';
 
@@ -32,7 +33,7 @@ export const FaqSection: React.FC = () => {
           </p>
         </div>
 
-        {/* FAQ Accordion Items */}
+        {/* FAQ Accordion Items with Smooth Height Transitions */}
         <div className="space-y-3" role="region" aria-label="Lista de Perguntas Frequentes">
           {FAQS_DATA.map((faq) => {
             const isOpen = openFaqId === faq.id;
@@ -42,7 +43,7 @@ export const FaqSection: React.FC = () => {
             return (
               <div
                 key={faq.id}
-                className="rounded-2xl border border-zinc-200/90 bg-white overflow-hidden transition-all duration-200 shadow-2xs"
+                className="rounded-3xl border border-zinc-200/90 bg-white overflow-hidden transition-all duration-200 shadow-2xs"
               >
                 <button
                   id={headerId}
@@ -64,27 +65,36 @@ export const FaqSection: React.FC = () => {
                   </div>
                 </button>
 
-                {isOpen && (
-                  <div
-                    id={panelId}
-                    role="region"
-                    aria-labelledby={headerId}
-                    className="px-5 pb-6 sm:px-6 pt-1 text-xs sm:text-sm text-zinc-700 font-normal leading-relaxed border-t border-zinc-100"
-                  >
-                    <p>{faq.answer}</p>
-                  </div>
-                )}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={headerId}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: [0.25, 1, 0.5, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-6 sm:px-6 pt-1 text-xs sm:text-sm text-zinc-700 font-normal leading-relaxed border-t border-zinc-100">
+                        <p>{faq.answer}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
         </div>
 
         {/* Still Have Questions Box */}
-        <div className="mt-10 p-6 rounded-2xl bg-white border border-zinc-200/80 text-center space-y-3">
+        <div className="mt-10 p-6 rounded-3xl bg-white border border-zinc-200/80 text-center space-y-3 shadow-2xs">
           <p className="text-xs sm:text-sm text-zinc-700">
             Ficou com alguma dúvida específica sobre sabores personalizados ou alergênicos?
           </p>
-          <a
+          <motion.a
+            whileTap={{ scale: 0.95 }}
             href={
               BUSINESS_INFO.whatsappBaseUrl +
               '?text=' +
@@ -94,11 +104,11 @@ export const FaqSection: React.FC = () => {
             }
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1E2024] hover:bg-zinc-800 text-white text-xs font-medium transition-colors shadow-2xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1E2024] hover:bg-zinc-800 text-white text-xs font-medium transition-colors shadow-2xs cursor-pointer"
           >
             <MessageCircle className="w-3.5 h-3.5 text-[#C49A6C]" />
             <span>Falar com a Confeiteira no WhatsApp</span>
-          </a>
+          </motion.a>
         </div>
 
       </div>

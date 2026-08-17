@@ -3,7 +3,11 @@ import { BUSINESS_INFO } from '../data/products';
 import { Logo } from './Logo';
 import { MessageCircle, Instagram, MapPin, Clock, Heart, ArrowUp } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenLegalModal?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -122,6 +126,16 @@ export const Footer: React.FC = () => {
                   • Perguntas Frequentes
                 </a>
               </li>
+              {onOpenLegalModal && (
+                <li>
+                  <button
+                    onClick={onOpenLegalModal}
+                    className="hover:text-[#C49A6C] transition-colors cursor-pointer text-left"
+                  >
+                    • Termos de Uso & LGPD
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -129,12 +143,23 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-light">
-          <div className="flex items-center gap-1.5 text-center sm:text-left">
+          <div className="flex flex-wrap items-center gap-1.5 text-center sm:text-left">
             <span>© {new Date().getFullYear()} Maurevite Confeitaria Artesanal.</span>
             <span className="hidden sm:inline">•</span>
             <span className="flex items-center gap-1">
               Feito com <Heart className="w-3 h-3 text-[#C49A6C] fill-[#C49A6C]" /> em Capão Bonito - SP
             </span>
+            {onOpenLegalModal && (
+              <>
+                <span className="hidden sm:inline">•</span>
+                <button
+                  onClick={onOpenLegalModal}
+                  className="hover:text-zinc-300 underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  Termos & Privacidade
+                </button>
+              </>
+            )}
           </div>
 
           <button
