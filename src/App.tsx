@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ProductItem, OrderItem } from './types';
+import { PRODUCTS_DATA } from './data/products';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { BentoShowcase } from './components/BentoShowcase';
 import { MenuSection } from './components/MenuSection';
 import { CraftsmanshipManifesto } from './components/CraftsmanshipManifesto';
+import { CakeCalculator } from './components/CakeCalculator';
 import { HowToOrder } from './components/HowToOrder';
 import { FaqSection } from './components/FaqSection';
 import { Footer } from './components/Footer';
@@ -85,6 +87,14 @@ export default function App() {
     handleExploreMenu();
   };
 
+  const handleSelectProductForOrder = (productId: string) => {
+    const product = PRODUCTS_DATA.find((p) => p.id === productId);
+    if (product) {
+      handleAddToCart(product);
+      setIsOrderDrawerOpen(true);
+    }
+  };
+
   const totalOrderCount = orderItems.reduce((acc, curr) => acc + curr.quantity, 0);
 
   return (
@@ -111,6 +121,9 @@ export default function App() {
           onAddToCart={handleAddToCart}
           addedProductId={addedProductId}
         />
+
+        {/* Interactive Cake Yield Calculator */}
+        <CakeCalculator onSelectProductForOrder={handleSelectProductForOrder} />
 
         {/* Craftsmanship Manifesto (3 Pillars) */}
         <CraftsmanshipManifesto />

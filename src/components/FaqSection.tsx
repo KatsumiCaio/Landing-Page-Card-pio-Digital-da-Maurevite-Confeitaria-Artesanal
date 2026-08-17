@@ -33,9 +33,11 @@ export const FaqSection: React.FC = () => {
         </div>
 
         {/* FAQ Accordion Items */}
-        <div className="space-y-3">
+        <div className="space-y-3" role="region" aria-label="Lista de Perguntas Frequentes">
           {FAQS_DATA.map((faq) => {
             const isOpen = openFaqId === faq.id;
+            const headerId = `faq-header-${faq.id}`;
+            const panelId = `faq-panel-${faq.id}`;
 
             return (
               <div
@@ -43,24 +45,32 @@ export const FaqSection: React.FC = () => {
                 className="rounded-2xl border border-zinc-200/90 bg-white overflow-hidden transition-all duration-200 shadow-2xs"
               >
                 <button
+                  id={headerId}
                   onClick={() => toggleFaq(faq.id)}
-                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-hidden hover:bg-zinc-50/50 transition-colors"
                   aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#C49A6C] focus-visible:ring-offset-2 hover:bg-zinc-50/70 transition-colors"
                 >
-                  <span className="font-serif text-base sm:text-lg text-zinc-900 font-normal">
+                  <span className="font-serif text-base sm:text-lg text-zinc-900 font-medium">
                     {faq.question}
                   </span>
                   <div
-                    className={`w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center shrink-0 transition-transform duration-300 ${
-                      isOpen ? 'rotate-180 bg-[#1E2024] text-white' : 'text-zinc-500'
+                    className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
+                      isOpen ? 'rotate-180 bg-[#1E2024] text-white' : 'bg-zinc-100 text-zinc-700'
                     }`}
+                    aria-hidden="true"
                   >
                     <ChevronDown className="w-4 h-4" />
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="px-5 pb-6 sm:px-6 pt-1 text-xs sm:text-sm text-zinc-600 font-light leading-relaxed border-t border-zinc-100">
+                  <div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={headerId}
+                    className="px-5 pb-6 sm:px-6 pt-1 text-xs sm:text-sm text-zinc-700 font-normal leading-relaxed border-t border-zinc-100"
+                  >
                     <p>{faq.answer}</p>
                   </div>
                 )}

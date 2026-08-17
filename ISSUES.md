@@ -14,8 +14,8 @@ Este documento cataloga todas as tarefas do projeto divididas nas três categori
   - **Status:** Concluído
   - **Escopo:** Tratar listener global para tecla `Escape` no `ProductModal` e no `OrderDrawer`.
 
-- [ ] **Issue #003 — `[Correção]` Formatação de moeda consistente em centavos no Drawer de Pedidos**
-  - **Status:** Aberto / Backlog
+- [x] **Issue #003 — `[Correção]` Formatação de moeda consistente em centavos no Drawer de Pedidos**
+  - **Status:** Concluído
   - **Escopo:** Validar que todos os cálculos de subtotal e total exibam sempre duas casas decimais com vírgula padrão BRL (`R$ 00,00`).
 
 ---
@@ -30,12 +30,12 @@ Este documento cataloga todas as tarefas do projeto divididas nas três categori
   - **Status:** Concluído
   - **Escopo:** Aplicação das cores do logotipo (fundo linho `#FAFAF8`, carvão `#1E2024` e acento dourado `#C49A6C`) com estados de hover e transições suaves.
 
-- [ ] **Issue #006 — `[Melhoria]` Acessibilidade de contraste WCAG AA e atributos ARIA nos acordeões de FAQ**
-  - **Status:** Aberto / Backlog
-  - **Escopo:** Adicionar `aria-controls` e estados de foco visíveis em todos os botões de controle e acordeões.
+- [x] **Issue #006 — `[Melhoria]` Acessibilidade de contraste WCAG AA e atributos ARIA nos acordeões de FAQ**
+  - **Status:** Concluído
+  - **Escopo:** Adicionar `aria-controls`, `aria-labelledby`, `role="region"` e estados de foco visíveis (`focus-visible:ring-2`) em todos os acordeões de FAQ com contraste WCAG AA.
 
-- [ ] **Issue #007 — `[Melhoria]` Pré-carregamento de fontes e Lazy Loading de imagens da vitrine**
-  - **Status:** Concluído / Em refinamento
+- [x] **Issue #007 — `[Melhoria]` Pré-carregamento de fontes e Lazy Loading de imagens da vitrine**
+  - **Status:** Concluído
   - **Escopo:** Inclusão de `preconnect` para Google Fonts e `loading="lazy"` nas fotos de produtos.
 
 ---
@@ -54,10 +54,10 @@ Este documento cataloga todas as tarefas do projeto divididas nas três categori
   - **Status:** Concluído
   - **Escopo:** Seção `BentoShowcase.tsx` com arquitetura visual hierárquica e links diretos para cada categoria.
 
-- [ ] **Issue #011 — `[Nova função]` Calculadora interativa de tamanho de bolo por número de convidados**
-  - **Status:** Aberto / Backlog
-  - **Escopo:** Criar um simulador onde o cliente arrasta o número de fatias/convidados (ex: 10, 20, 30 pessoas) e o app sugere o peso ideal (kg) e os sabores recomendados.
+- [x] **Issue #011 — `[Nova função]` Calculadora interativa de tamanho de bolo por número de convidados**
+  - **Status:** Concluído
+  - **Escopo:** Componente `CakeCalculator.tsx` permitindo ajustar quantidade de pessoas (5 a 60+), recomendando peso em kg (~110g/pessoa), diâmetro do aro/forma, quantidade de docinhos de apoio e orçamento direto via WhatsApp.
 
-- [ ] **Issue #012 — `[Nova função]` Seletor rápido de mensagem para datas comemorativas (Páscoa, Dia das Mães, Natal)**
+- [ ] **Issue #012 — `[Nova função]` Seletor rápido de kits e mensagens comemorativas sazonais**
   - **Status:** Aberto / Backlog
-  - **Escopo:** Adicionar banner sazonal configurável com kits e caixas temáticas em períodos festivos.
+  - **Escopo:** Banner sazonal comemorativo com kits temáticos de presentes para datas festivas.

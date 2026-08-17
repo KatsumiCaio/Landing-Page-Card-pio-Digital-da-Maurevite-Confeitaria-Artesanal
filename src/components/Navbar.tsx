@@ -22,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({ orderCount, onOpenOrderDrawer })
 
   const navLinks = [
     { label: 'Cardápio', href: '#cardapio' },
+    { label: 'Calculadora de Bolo', href: '#calculadora' },
     { label: 'Destaques', href: '#destaques' },
     { label: 'O Cuidado', href: '#cuidado' },
     { label: 'Como Pedir', href: '#como-pedir' },
