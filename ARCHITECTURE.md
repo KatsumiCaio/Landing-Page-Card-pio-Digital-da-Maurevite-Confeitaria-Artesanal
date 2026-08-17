@@ -35,11 +35,22 @@ Este documento formaliza as diretrizes arquiteturais, de engenharia de software 
 
 ---
 
-## 📊 2. Estratégia de Observabilidade & Telemetria
+## 📊 2. Estratégia de Observabilidade & Telemetria de Conversão
 
-- **Módulo Central**: `src/lib/observability.ts` centraliza a captura de erros, métricas de Core Web Vitals e eventos de conversão.
-- **Compatibilidade**: Pronto para Sentry (`captureException`), Datadog (`DD_RUM`), OpenTelemetry e New Relic.
-- **Error Boundary**: Toda a aplicação é protegida por `ErrorBoundary.tsx` para evitar tela branca em caso de falha de renderização.
+- **Módulo Central**: `src/lib/observability.ts` centraliza a captura de erros, métricas de Core Web Vitals e o funil de conversão nativo de pedidos.
+- **Configuração em Nuvem**:
+  - **Sentry DSN**: Configurado via variável de ambiente `VITE_SENTRY_DSN`. Quando presente, integra `window.Sentry` para captura de exceções e rastreamento de transações.
+  - **Datadog RUM**: Configurado via `VITE_DATADOG_APPLICATION_ID`, `VITE_DATADOG_CLIENT_TOKEN`, `VITE_DATADOG_SITE`, `VITE_DATADOG_SERVICE` e `VITE_DATADOG_ENV`. Monitora sessões, performance e Web Vitals em tempo real.
+  - **Fallback Gracioso**: Caso nenhuma chave esteja configurada, a camada de observabilidade mantém a telemetria ativa localmente em memória e no console de desenvolvimento sem lançar erros em runtime.
+- **Funil de Conversão WhatsApp**:
+  - `catalog_view` -> Visualização das categorias do cardápio;
+  - `product_detail_view` -> Abertura de modal com detalhes e fotos do doce/bolo;
+  - `cake_calculator_use` -> Interação e simulação na calculadora de fatias/kg;
+  - `add_to_bag` -> Inserção de itens na sacola de encomendas;
+  - `open_order_drawer` -> Visualização do resumo do pedido;
+  - `whatsapp_checkout_click` -> Disparo da mensagem estruturada para o WhatsApp comercial da Maurevite;
+  - `direct_whatsapp_contact` -> Cliques nos botões de atendimento direto (Hero, botão flutuante e rodapé).
+- **Error Boundary**: Toda a aplicação é protegida por `ErrorBoundary.tsx` para evitar tela branca em caso de falha de renderização e despachar o log de erro para a observabilidade.
 
 ---
 

@@ -59,6 +59,14 @@ export default function App() {
       return [...prev, { product, quantity: 1 }];
     });
 
+    // Telemetria de Conversão
+    observability.trackCartAction('add', {
+      id: product.id,
+      name: product.name,
+      price: product.priceValue,
+      quantity: 1,
+    });
+
     // Provide visual feedback
     setAddedProductId(product.id);
     setToastProduct(product);
@@ -78,7 +86,22 @@ export default function App() {
         .map((item) => {
           if (item.product.id === productId) {
             const newQty = item.quantity + delta;
-            return newQty > 0 ? { ...item, quantity: newQty } : null;
+            if (newQty > 0) {
+              observability.trackCartAction('quantity_change', {
+                id: item.product.id,
+                name: item.product.name,
+                price: item.product.priceValue,
+                quantity: newQty,
+              });
+              return { ...item, quantity: newQty };
+            }
+            observability.trackCartAction('remove', {
+              id: item.product.id,
+              name: item.product.name,
+              price: item.product.priceValue,
+              quantity: 0,
+            });
+            return null;
           }
           return item;
         })
@@ -87,11 +110,31 @@ export default function App() {
   };
 
   const handleRemoveItem = (productId: string) => {
+    const item = orderItems.find((i) => i.product.id === productId);
+    if (item) {
+      observability.trackCartAction('remove', {
+        id: item.product.id,
+        name: item.product.name,
+        price: item.product.priceValue,
+        quantity: 0,
+      });
+    }
     setOrderItems((prev) => prev.filter((item) => item.product.id !== productId));
   };
 
   const handleClearOrder = () => {
+    observability.trackCartAction('clear');
     setOrderItems([]);
+  };
+
+  const handleOpenOrderDrawer = () => {
+    observability.trackConversionStep('open_order_drawer', { itemsCount: totalOrderCount });
+    setIsOrderDrawerOpen(true);
+  };
+
+  const handleOpenProductModal = (product: ProductItem) => {
+    observability.trackProductView(product.id, product.name, product.category, product.priceValue);
+    setActiveModalProduct(product);
   };
 
   const handleExploreMenu = () => {
@@ -122,7 +165,7 @@ export default function App() {
         {/* Sticky Header / Navbar */}
         <Navbar
           orderCount={totalOrderCount}
-          onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
+          onOpenOrderDrawer={handleOpenOrderDrawer}
         />
 
         {/* Main Content Area */}
@@ -137,7 +180,7 @@ export default function App() {
           <MenuSection
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
-            onOpenProductModal={(product) => setActiveModalProduct(product)}
+            onOpenProductModal={handleOpenProductModal}
             onAddToCart={handleAddToCart}
             addedProductId={addedProductId}
           />
@@ -170,7 +213,7 @@ export default function App() {
         {/* Toast Feedback on Add to Bag */}
         <ToastFeedback
           product={toastProduct}
-          onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
+          onOpenOrderDrawer={handleOpenOrderDrawer}
           onDismiss={() => setToastProduct(null)}
         />
 

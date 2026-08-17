@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Calculator, Users, Sparkles, Cake, MessageCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { BUSINESS_INFO, PRODUCTS_DATA } from '../data/products';
+import { observability } from '../lib/observability';
 import { ImageWithSkeleton } from './ImageWithSkeleton';
 
 interface CakeCalculatorProps {
@@ -43,7 +44,18 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
     { id: 'almoco-familia', label: 'Almoço em Família' },
   ];
 
+  const handleGuestChange = (count: number) => {
+    setGuestCount(count);
+    observability.trackConversionStep('cake_calculator_use', {
+      guestCount: count,
+      recommendedWeightKg: Math.max(1.0, Math.round((count * 0.11) * 10) / 10),
+      selectedCakeId: selectedFlavorId,
+    });
+  };
+
   const handleWhatsAppConsultation = () => {
+    observability.trackDirectContact('hero', 'calculator_simulation');
+
     const text = `*SIMULAÇÃO DE BOLO - MAUREVITE CONFEITARIA*\n\n` +
       `*Ocasião:* ${occasions.find(o => o.id === occasion)?.label || occasion}\n` +
       `*Número de Convidados:* ${guestCount} pessoas\n` +
@@ -132,7 +144,7 @@ export const CakeCalculator: React.FC<CakeCalculatorProps> = ({ onSelectProductF
                 max={60}
                 step={5}
                 value={guestCount}
-                onChange={(e) => setGuestCount(Number(e.target.value))}
+                onChange={(e) => handleGuestChange(Number(e.target.value))}
                 className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#1E2024] transition-all"
                 aria-label="Controle de quantidade de convidados"
               />

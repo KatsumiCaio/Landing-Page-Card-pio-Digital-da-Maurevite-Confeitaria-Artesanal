@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BUSINESS_INFO } from '../data/products';
+import { observability } from '../lib/observability';
 import { MessageCircle, X } from 'lucide-react';
 
 export const FloatingWhatsApp: React.FC = () => {
   const [showTooltip, setShowTooltip] = useState(true);
+
+  const handleClickWhatsApp = () => {
+    observability.trackDirectContact('floating_button', 'floating_action_pill');
+  };
 
   return (
     <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-2 pointer-events-auto">
@@ -37,6 +42,7 @@ export const FloatingWhatsApp: React.FC = () => {
       <motion.a
         whileHover={{ scale: 1.03, y: -2 }}
         whileTap={{ scale: 0.94 }}
+        onClick={handleClickWhatsApp}
         href={
           BUSINESS_INFO.whatsappBaseUrl +
           '?text=' +
@@ -58,3 +64,4 @@ export const FloatingWhatsApp: React.FC = () => {
     </div>
   );
 };
+

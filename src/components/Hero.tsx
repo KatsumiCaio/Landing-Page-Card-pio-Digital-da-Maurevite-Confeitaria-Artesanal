@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { BUSINESS_INFO } from '../data/products';
+import { observability } from '../lib/observability';
 import { MessageCircle, Sparkles, ArrowRight, ShieldCheck, Heart } from 'lucide-react';
 import { Logo } from './Logo';
 import { ImageWithSkeleton } from './ImageWithSkeleton';
@@ -10,6 +11,10 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onExploreMenu }) => {
+  const handleHeroWhatsAppClick = () => {
+    observability.trackDirectContact('hero', 'hero_primary_cta');
+  };
+
   return (
     <section className="relative overflow-hidden pt-8 pb-16 md:pt-14 md:pb-24 border-b border-zinc-200/70">
       {/* Background Subtle Noise / Texture Accents */}
@@ -66,6 +71,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreMenu }) => {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-3">
               <motion.a
                 whileTap={{ scale: 0.96 }}
+                onClick={handleHeroWhatsAppClick}
                 href={BUSINESS_INFO.whatsappBaseUrl + '?text=' + encodeURIComponent('Olá! Gostaria de consultar a disponibilidade para uma encomenda na Maurevite.')}
                 target="_blank"
                 rel="noopener noreferrer"

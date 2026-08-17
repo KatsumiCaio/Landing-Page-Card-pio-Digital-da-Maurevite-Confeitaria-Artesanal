@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { OrderItem } from '../types';
 import { BUSINESS_INFO } from '../data/products';
-import { X, Trash2, Plus, Minus, MessageCircle, Calendar, MapPin, Sparkles, ShoppingBag, Loader2 } from 'lucide-react';
+import { observability } from '../lib/observability';
+import { securityService } from '../lib/security';
+import { X, Trash2, Plus, Minus, MessageCircle, Calendar, MapPin, Sparkles, ShoppingBag, Loader2, AlertCircle } from 'lucide-react';
 import { ImageWithSkeleton } from './ImageWithSkeleton';
 
 interface OrderDrawerProps {
@@ -27,16 +29,30 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
   const [customerNotes, setCustomerNotes] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rateLimitWarning, setRateLimitWarning] = useState<string | null>(null);
 
   const totalEstimate = items.reduce((acc, curr) => acc + curr.product.priceValue * curr.quantity, 0);
 
   const handleSendWhatsAppOrder = () => {
+    // 1. Rate Limit & Anti-Spam Check
+    const rateCheck = securityService.checkRateLimit('whatsapp_checkout_action', 4, 8000);
+    if (!rateCheck.allowed) {
+      setRateLimitWarning(rateCheck.message || 'Por favor, aguarde alguns segundos antes de reenviar.');
+      return;
+    }
+    setRateLimitWarning(null);
+
+    // 2. Sanitização de entradas
+    const cleanName = securityService.sanitizeInput(customerName, 80);
+    const cleanDate = securityService.sanitizeInput(deliveryDate, 30);
+    const cleanNotes = securityService.sanitizeInput(customerNotes, 400);
+
     setIsSubmitting(true);
 
     let text = `*NOVA ENCOMENDA - MAUREVITE CONFEITARIA*\n\n`;
 
-    if (customerName.trim()) {
-      text += `*Cliente:* ${customerName.trim()}\n`;
+    if (cleanName) {
+      text += `*Cliente:* ${cleanName}\n`;
     }
 
     text += `*Modalidade:* ${
@@ -45,8 +61,8 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
         : 'Entrega por Delivery em Capão Bonito - SP'
     }\n`;
 
-    if (deliveryDate.trim()) {
-      text += `*Data Desejada:* ${deliveryDate.trim()}\n`;
+    if (cleanDate) {
+      text += `*Data Desejada:* ${cleanDate}\n`;
     }
 
     text += `\n*ITENS SELECIONADOS:*\n`;
@@ -56,11 +72,21 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
 
     text += `\n*Estimativa Total:* R$ ${totalEstimate.toFixed(2).replace('.', ',')}\n`;
 
-    if (customerNotes.trim()) {
-      text += `\n*Observações / Personalização:* ${customerNotes.trim()}\n`;
+    if (cleanNotes) {
+      text += `\n*Observações / Personalização:* ${cleanNotes}\n`;
     }
 
     text += `\n_Gostaria de confirmar a disponibilidade e os detalhes para pagamento!_`;
+
+    // 3. Telemetria de Conversão do Funil
+    observability.trackWhatsAppCheckout({
+      itemsCount: items.reduce((acc, curr) => acc + curr.quantity, 0),
+      totalValue: totalEstimate,
+      deliveryType,
+      productsList: items.map((i) => `${i.quantity}x ${i.product.name}`),
+      hasDeliveryDate: Boolean(cleanDate),
+      hasCustomNotes: Boolean(cleanNotes),
+    });
 
     const url = `${BUSINESS_INFO.whatsappBaseUrl}?text=${encodeURIComponent(text)}`;
 
@@ -331,6 +357,13 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
                     R$ {totalEstimate.toFixed(2).replace('.', ',')}
                   </motion.span>
                 </div>
+
+                {rateLimitWarning && (
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-2 text-xs text-amber-800">
+                    <AlertCircle className="w-4 h-4 text-[#B48250] shrink-0" />
+                    <span>{rateLimitWarning}</span>
+                  </div>
+                )}
 
                 <motion.button
                   whileTap={{ scale: 0.97 }}

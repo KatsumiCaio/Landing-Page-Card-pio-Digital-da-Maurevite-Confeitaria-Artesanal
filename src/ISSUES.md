@@ -46,6 +46,10 @@ Este documento cataloga todas as tarefas do projeto divididas nas três categori
   - **Status:** Concluído
   - **Escopo:** Configuração da esteira de CI (`.github/workflows/quality-gate.yml`) com validação estática de tipagem, Commitlint, Knip e Playwright; implementação da camada de observabilidade (`src/lib/observability.ts`) com ErrorBoundary (`src/components/ErrorBoundary.tsx`); serviço de segurança e rate limiting (`src/lib/security.ts`); modal de Termos de Uso e Privacidade LGPD (`src/components/LegalModal.tsx`); suíte de testes unitários e de integração (`tests/`); e formalização de contratos de arquitetura (`ARCHITECTURE.md`).
 
+- [x] **Issue #015 — `[Melhoria]` Observabilidade em Produção (Sentry / Datadog DSN) e Telemetria do Funil de Conversão WhatsApp**
+  - **Status:** Concluído
+  - **Escopo:** Configuração de variáveis de ambiente para Sentry DSN (`VITE_SENTRY_DSN`) e Datadog RUM (`VITE_DATADOG_*`) em `.env.example`; integração da camada de telemetria `src/lib/observability.ts` com o funil completo de conversão de encomendas (`trackWhatsAppCheckout`, `trackCartAction`, `trackConversionStep`, `trackDirectContact`); proteção com rate limiting e sanitização no drawer de checkout; cálculo de métricas de conversão e receita estimada; e suíte de testes automatizados em `tests/observability.test.ts`.
+
 ---
 
 ## ✨ 3. Novas Funções (`[Nova função]`)
