@@ -73,3 +73,8 @@ Este documento cataloga todas as tarefas do projeto divididas nas três categori
 - [x] **Issue #012 — `[Nova função]` Seletor rápido de kits e mensagens comemorativas sazonais com micro-selos decorativos**
   - **Status:** Concluído
   - **Escopo:** Seção comemorativa `SeasonalKits.tsx` com catálogo temático de presentes (Mimos & Afeto, Aniversários, Românticos, Celebrações em Família), micro-selos decorativos artesanais ("Mais Escolhido", "Caixa Visor Luxo", "Cartão Incluso", "Selo de Cera"), seletor interativo de dedicatórias caligrafadas sem custo adicional, adição direta à sacola e link de encomenda no WhatsApp.
+
+- [x] **Issue #016 — `[Nova função]` Favicon Vetorial Artesanal e Ícones de Navegação da Barra Superior**
+  - **Status:** Concluído
+  - **Escopo:** Criação do favicon vetorial de alta definição (`public/favicon.svg`) com o emblema da batedeira artesanal e gradiente dourado sobre fundo carvão; inclusão de meta tags (`<link rel="icon">`, `<link rel="apple-touch-icon">`, `<meta name="theme-color">`) em `index.html`; e inclusão de ícones semânticos da biblioteca Lucide em cada rota e item da barra de navegação desktop e menu mobile (`Navbar.tsx`).
+

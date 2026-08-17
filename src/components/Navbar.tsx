@@ -2,7 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Logo } from './Logo';
 import { BUSINESS_INFO } from '../data/products';
-import { ShoppingBag, MessageCircle, Menu, X, Clock, MapPin } from 'lucide-react';
+import {
+  ShoppingBag,
+  MessageCircle,
+  Menu,
+  X,
+  Clock,
+  MapPin,
+  UtensilsCrossed,
+  Gift,
+  Calculator,
+  Sparkles,
+  Heart,
+  ClipboardList,
+  HelpCircle,
+  ChevronRight,
+} from 'lucide-react';
 
 interface NavbarProps {
   orderCount: number;
@@ -22,13 +37,13 @@ export const Navbar: React.FC<NavbarProps> = ({ orderCount, onOpenOrderDrawer })
   }, []);
 
   const navLinks = [
-    { label: 'Cardápio', href: '#cardapio' },
-    { label: 'Kits & Mimos', href: '#kits-especiais' },
-    { label: 'Calculadora de Bolo', href: '#calculadora' },
-    { label: 'Destaques', href: '#destaques' },
-    { label: 'O Cuidado', href: '#cuidado' },
-    { label: 'Como Pedir', href: '#como-pedir' },
-    { label: 'Dúvidas', href: '#faq' },
+    { label: 'Cardápio', href: '#cardapio', icon: UtensilsCrossed },
+    { label: 'Kits & Mimos', href: '#kits-especiais', icon: Gift },
+    { label: 'Calculadora', href: '#calculadora', icon: Calculator },
+    { label: 'Destaques', href: '#destaques', icon: Sparkles },
+    { label: 'O Cuidado', href: '#cuidado', icon: Heart },
+    { label: 'Como Pedir', href: '#como-pedir', icon: ClipboardList },
+    { label: 'Dúvidas', href: '#faq', icon: HelpCircle },
   ];
 
   return (
@@ -160,17 +175,26 @@ export const Navbar: React.FC<NavbarProps> = ({ orderCount, onOpenOrderDrawer })
               transition={{ duration: 0.25, ease: 'easeInOut' }}
               className="md:hidden border-t border-zinc-200 bg-[#FAFAF8] px-4 pt-4 pb-6 mt-3 space-y-3 shadow-lg overflow-hidden"
             >
-              <nav className="flex flex-col space-y-2">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2 text-base font-medium text-zinc-800 rounded-lg hover:bg-zinc-100 transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                ))}
+              <nav className="flex flex-col space-y-1.5" aria-label="Menu principal mobile">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between px-3.5 py-2.5 text-sm font-medium text-zinc-800 rounded-xl hover:bg-zinc-100 active:bg-zinc-200 transition-colors group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="p-1.5 rounded-lg bg-[#EAE8E3] text-[#1E2024] group-hover:bg-[#C49A6C] group-hover:text-white transition-colors">
+                          <Icon className="w-4 h-4" />
+                        </span>
+                        <span>{link.label}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-zinc-800 transition-colors" />
+                    </a>
+                  );
+                })}
               </nav>
 
               <div className="pt-3 border-t border-zinc-200 flex flex-col gap-2.5">
