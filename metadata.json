@@ -1,0 +1,7 @@
+{
+  "name": "Maurevite | Confeitaria Artesanal",
+  "description": "Landing Page e Cardápio Digital da Maurevite Confeitaria Artesanal em Capão Bonito - SP.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
